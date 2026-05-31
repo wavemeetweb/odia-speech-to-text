@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ଓଡ଼ିଆ ଫ୍ରି Voice-to-Text (Self-Contained)</title>
+    <title>ଓଡ଼ିଆ Voice-to-Text (Smart Dictionary)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -104,7 +104,7 @@
     <h1>ଓଡ଼ିଆ Voice to Text</h1>
     <div class="sub-title">100% Free Public Utility App</div>
     
-    <div class="info-tag">💡 Speak or type in English spellings (like 'namaskar') to generate Odia script!</div>
+    <div class="info-tag">💡 Custom Dictionary Enabled. Try saying 'namaskar', 'dhanyabad', or 'kemiti achha'!</div>
     
     <textarea id="output-box" placeholder="ଏଠାରେ କ୍ଲିକ୍ କରି କୁହନ୍ତୁ କିମ୍ବା ଟାଇପ୍ କରନ୍ତୁ..."></textarea>
     
@@ -118,39 +118,72 @@
 </div>
 
 <script>
-    // 🌟 BUILT-IN LIGHTWEIGHT TRANSLITERATION ENGINE (Replaces external CDN library dependency)
-    const OdiaPhoneticMap = {
-        'a': 'ଅ', 'aa': 'ଆ', 'i': 'ଇ', 'ee': 'ଈ', 'u': 'ଉ', 'oo': 'ଊ', 'e': 'ଏ', 'ai': 'ଐ', 'o': 'ଓ', 'au': 'ଔ',
-        'k': 'କ', 'kh': 'ଖ', 'g': 'ଗ', 'gh': 'ଘ', 'n': 'ଙ',
-        'c': 'ଚ', 'ch': 'ଛ', 'j': 'ଜ', 'jh': 'ଝ',
-        't': 'ଟ', 'th': 'ଠ', 'd': 'ଡ', 'dh': 'ଢ',
-        'p': 'ପ', 'ph': 'ଫ', 'b': 'ବ', 'bh': 'ଭ', 'm': 'ମ',
-        'y': 'ଯ', 'r': 'ର', 'l': 'ଲ', 'w': 'ୱ', 'ś': 'ଶ', 'sh': 'ଷ', 's': 'ସ', 'h': 'ହ',
-        'ks': 'କ୍ଷ', 'gy': 'ଜ୍ଞ', 'mng': 'ଂ', 'ah': 'ଃ', '敲': 'ଁ'
+    // 📖 YOUR CUSTOM ODIA DICTIONARY 
+    // You can add as many words as you want here! 
+    // Format: 'what_browser_hears': 'correct_odia_spelling'
+    const OdiaDictionary = {
+        'namaskar': 'ନମସ୍କାର',
+        'namaskara': 'ନମସ୍କାର',
+        'dhanyabad': 'ଧନ୍ୟବାଦ',
+        'dhanyabada': 'ଧନ୍ୟବାଦ',
+        'kemiti': 'କେମିତି',
+        'acha': 'ଅଛ',
+        'achha': 'ଅଛନ୍ତି',
+        'odisha': 'ଓଡ଼ିଶା',
+        'oriya': 'ଓଡ଼ିଆ',
+        'odia': 'ଓଡ଼ିଆ',
+        'kichi': 'କିଛି',
+        'katha': 'କଥା',
+        'nahi': 'ନାହିଁ',
+        'bhala': 'ଭଲ',
+        'jay': 'ଜୟ',
+        'jaganath': 'ଜଗନ୍ନାଥ',
+        'jagannath': 'ଜଗନ୍ନାଥ',
+        'bapa': 'ବାପା',
+        'maa': 'ମା',
+        'ghara': 'ଘର',
+        'khabar': 'ଖବର'
     };
 
-    function transliterateToOdia(text) {
-        if (!text) return "";
-        if (/[\u0B00-\u0B7F]/.test(text)) return text; // If already natively in Odia, don't modify it
+    // Fallback alphabetic map if the exact word isn't in your dictionary list
+    const CharacterMap = {
+        'a': 'ଅ', 'aa': 'ଆ', 'i': 'ଇ', 'ee': 'ଈ', 'u': 'ଉ', 'oo': 'ଊ', 'e': 'ଏ', 'ai': 'ଐ', 'o': 'ଓ', 'au': 'ଔ',
+        'k': 'କ', 'kh': 'ଖ', 'g': 'ଗ', 'gh': 'ଘ', 'n': 'ଙ', 'c': 'ଚ', 'ch': 'ଛ', 'j': 'ଜ', 'jh': 'ଝ',
+        't': 'ଟ', 'th': 'ଠ', 'd': 'ଡ', 'dh': 'ଢ', 'p': 'ପ', 'ph': 'ଫ', 'b': 'ବ', 'bh': 'ଭ', 'm': 'ମ',
+        'y': 'ଯ', 'r': 'ର', 'l': 'ଲ', 'w': 'ୱ', 'ś': 'ଶ', 'sh': 'ଷ', 's': 'ସ', 'h': 'ହ'
+    };
 
-        let clean = text.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
+    function processWordThroughDictionary(word) {
+        if (!word) return "";
         
-        // Match multi-character phonetic spellings first, then single characters
-        let rules = ['sh', 'kh', 'gh', 'ch', 'jh', 'th', 'dh', 'bh', 'ks', 'gy', 'aa', 'ee', 'oo', 'ai', 'au', 'mng', 'ah'];
-        let result = clean;
+        // Clean out trailing punctuation symbols
+        let cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
+        if (!cleanWord) return "";
 
-        rules.forEach(rule => {
-            if (OdiaPhoneticMap[rule]) {
-                let regex = new RegExp(rule, 'g');
-                result = result.replace(regex, OdiaPhoneticMap[rule]);
-            }
-        });
+        // 1. First target check: Look up the whole word inside our custom dictionary
+        if (OdiaDictionary[cleanWord]) {
+            return OdiaDictionary[cleanWord];
+        }
 
-        // Resolve single letters remaining
-        for (let key in OdiaPhoneticMap) {
-            if (key.length === 1) {
-                let regex = new RegExp(key, 'g');
-                result = result.replace(regex, OdiaPhoneticMap[key]);
+        // 2. Second target check: If it's already written in Odia script directly, keep it
+        if (/[\u0B00-\u0B7F]/.test(cleanWord)) {
+            return cleanWord;
+        }
+
+        // 3. Fallback check: Character by character matching if the word isn't in the list
+        let result = "";
+        for (let i = 0; i < cleanWord.length; i++) {
+            let char = cleanWord[i];
+            let nextChar = cleanWord[i+1] || "";
+            let doubleChunk = char + nextChar;
+
+            if (CharacterMap[doubleChunk]) {
+                result += CharacterMap[doubleChunk];
+                i++; 
+            } else if (CharacterMap[char]) {
+                result += CharacterMap[char];
+            } else {
+                result += char;
             }
         }
         return result;
@@ -170,10 +203,12 @@
         recognition = new SpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = true;
-        recognition.lang = 'hi-IN'; 
+        
+        // Listen to both language dialects smoothly
+        recognition.lang = 'or-IN'; 
 
         recognition.onstart = () => {
-            status.textContent = "🎙️ Listening... Please speak your Odia words clearly.";
+            status.textContent = "🎙️ Listening... Speak your Odia dictionary words.";
             startBtn.disabled = true;
             stopBtn.disabled = false;
             finalCommittedText = outputBox.value; 
@@ -204,25 +239,25 @@
             }
 
             if (newFinalText !== '') {
-                let cleanFinal = processSentenceToOdia(newFinalText);
+                let cleanFinal = processSentence(newFinalText);
                 finalCommittedText += cleanFinal + " ";
             }
 
-            let cleanInterim = processSentenceToOdia(interimTranscript);
+            let cleanInterim = processSentence(interimTranscript);
             outputBox.value = finalCommittedText + cleanInterim;
         };
     } else {
         status.textContent = "Voice input requires Google Chrome or Microsoft Edge.";
     }
 
-    function processSentenceToOdia(sentence) {
+    function processSentence(sentence) {
         if (!sentence) return "";
         let tokens = sentence.split(/\s+/);
-        let convertedTokens = tokens.map(token => transliterateToOdia(token));
+        let convertedTokens = tokens.map(token => processWordThroughDictionary(token));
         return convertedTokens.join(" ");
     }
 
-    // Typing system tracking layout configurations
+    // Typing system intercept mapping configuration
     outputBox.addEventListener('keydown', (e) => {
         if (e.key === ' ') {
             let cursorPosition = outputBox.selectionStart;
@@ -233,7 +268,7 @@
             let lastToken = tokens[tokens.length - 1];
 
             if (/^[a-zA-Z]+$/.test(lastToken.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,""))) {
-                let convertedWord = transliterateToOdia(lastToken);
+                let convertedWord = processWordThroughDictionary(lastToken);
                 
                 let startOfWordIdx = textBeforeCursor.lastIndexOf(lastToken);
                 let updatedTextBefore = currentText.substring(0, startOfWordIdx) + convertedWord;
