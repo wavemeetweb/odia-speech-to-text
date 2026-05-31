@@ -1,0 +1,170 @@
+:root {
+    --bg-main: #09090b;
+    --panel-bg: rgba(20, 20, 25, 0.6);
+    --panel-border: rgba(255, 255, 255, 0.06);
+    
+    --text-primary: #f4f4f5;
+    --text-muted: #71717a;
+    --text-interim: #a1a1aa;
+    
+    --accent-primary: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.3);
+    --accent-danger: #ef4444;
+    --danger-glow: rgba(239, 68, 68, 0.3);
+    
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 720px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 24px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.app-header {
+    text-align: left;
+}
+
+.app-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+}
+
+.app-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.output-canvas {
+    width: 100%;
+    min-height: 240px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 24px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.output-canvas:focus-within {
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.output-canvas:empty::before {
+    content: "Initialize recognition system and begin speaking...";
+    color: rgba(255, 255, 255, 0.15);
+    font-style: italic;
+}
+
+.controls-workspace {
+    display: flex;
+    gap: 16px;
+}
+
+.btn {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition-smooth);
+}
+
+.btn-primary {
+    background: var(--accent-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    flex-grow: 2;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-primary[data-state="listening"] {
+    background: var(--accent-danger);
+    box-shadow: 0 4px 20px var(--danger-glow);
+}
+
+.btn-primary[data-state="listening"]:hover {
+    background: #dc2626;
+    box-shadow: 0 6px 24px rgba(239, 68, 68, 0.5);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-grow: 1;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* Custom modern scrollbar styles */
+.output-canvas::-webkit-scrollbar {
+    width: 6px;
+}
+.output-canvas::-webkit-scrollbar-track {
+    background: transparent;
+}
+.output-canvas::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.output-canvas::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
