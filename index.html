@@ -3,34 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odia Voice Engine (Groq)</title>
+    <title>Odia Voice Engine (Premium)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <main class="app-container">
+    <!-- Ambient Background Lighting -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+
+    <!-- Floating API Key Modal -->
+    <div id="configModal" class="modal-overlay">
+        <div class="glass-panel modal-card">
+            <div class="modal-header">
+                <h3>System Configuration</h3>
+                <p>Initialize Groq LPU API Key</p>
+            </div>
+            <div class="modal-body">
+                <input type="password" id="groqApiKey" class="glass-input" placeholder="gsk_...">
+            </div>
+            <div class="modal-footer">
+                <button id="saveKeyBtn" class="btn btn-glow">Save & Initialize</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="glass-panel app-container">
         <header class="app-header">
-            <div class="brand-badge">GROQ WHISPER v3.0</div>
-            <h1 class="app-title">ଓଡ଼ିଆ Speech Engine</h1>
-            <p class="app-subtitle">Powered by Groq LPU Hardware Acceleration</p>
+            <div class="header-meta">
+                <div class="brand-badge">GROQ LPU CORE</div>
+                <button id="settingsBtn" class="icon-btn" aria-label="Settings">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+            </div>
+            <h1 class="app-title">ଓଡ଼ିଆ <span>Engine</span></h1>
+            <p class="app-subtitle">Zero-latency speech recognition</p>
         </header>
 
-        <section class="config-workspace">
-            <input type="password" id="groqApiKey" class="input-field" placeholder="Enter your Groq API Key (gsk_...)">
-        </section>
-
         <section class="display-workspace">
-            <div id="outputCanvas" class="output-canvas" tabIndex="0" role="textbox" aria-multiline="true"></div>
+            <div id="outputCanvas" class="glass-input output-canvas" tabIndex="0" role="textbox" aria-multiline="true"></div>
             <div id="statusIndicator" class="status-indicator">SYSTEM READY</div>
         </section>
         
         <footer class="controls-workspace">
-            <button id="toggleRecordBtn" class="btn btn-primary" data-state="idle">
+            <button id="toggleRecordBtn" class="btn btn-outline" data-state="idle">
                 <div class="pulse-ring"></div>
                 <span class="btn-text">Listen</span>
             </button>
-            <button id="copyTextBtn" class="btn btn-secondary">Copy</button>
-            <button id="clearCanvasBtn" class="btn btn-danger">Clear</button>
+            <button id="copyTextBtn" class="btn btn-ghost">Copy</button>
+            <button id="clearCanvasBtn" class="btn btn-ghost">Clear</button>
         </footer>
     </main>
 
