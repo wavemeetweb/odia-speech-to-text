@@ -1,401 +1,238 @@
 <!DOCTYPE html>
-<html lang="or">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ଓଡ଼ିଆ Voice-to-Text Pro</title>
+    <title>Voice to Text Engine</title>
     <style>
-        :root {
-            --bg-primary: #0f172a;
-            --bg-card: #1e293b;
-            --accent: #f97316;
-            --accent-hover: #ea580c;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --success: #10b981;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
+            background: #0f0f12;
+            color: #e4e4ed;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
-            box-sizing: border-box;
         }
 
         .container {
-            background-color: var(--bg-card);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 650px;
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #f97316, #ef4444);
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .sub-heading {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin-bottom: 24px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            background-color: #1e293b;
-            border: 1px solid var(--border);
-            padding: 6px 16px;
-            border-radius: 9999px;
-            font-size: 13px;
-            color: #38bdf8;
-            margin-bottom: 24px;
-            gap: 8px;
-        }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #38bdf8;
-            border-radius: 50%;
-        }
-
-        .textarea-wrapper {
-            position: relative;
-            margin-bottom: 24px;
-        }
-
-        #output-box {
-            width: 100%;
-            height: 260px;
-            background-color: #0f172a;
-            border: 2px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 18px;
-            font-size: 19px;
-            line-height: 1.7;
-            color: var(--text-main);
-            resize: none;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            font-family: inherit;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
         }
 
-        #output-box:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .control-panel {
+        #output {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            white-space: pre-wrap;
+            margin-bottom: 25px;
+            color: #d1d1e0;
+        }
+
+        #output:empty::before {
+            content: "Click 'Start Listening' and speak into your microphone...";
+            color: #555566;
+            font-style: italic;
+        }
+
+        .controls {
             display: flex;
-            gap: 16px;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
+            gap: 15px;
+            justify-content: center;
         }
 
         button {
-            padding: 14px 28px;
-            font-size: 15px;
-            font-weight: 600;
+            background: #3b82f6;
+            color: #ffffff;
             border: none;
-            border-radius: 12px;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
         }
 
-        .btn-start {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn-start:hover:not(:disabled) {
-            background-color: #059669;
+        button:hover {
+            background: #2563eb;
             transform: translateY(-1px);
         }
 
-        .btn-stop {
-            background-color: #ef4444;
-            color: white;
+        button:active {
+            transform: translateY(1px);
         }
 
-        .btn-stop:hover:not(:disabled) {
-            background-color: #dc2626;
-            transform: translateY(-1px);
+        button.listening {
+            background: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
-        .btn-copy {
-            background-color: #334155;
-            color: var(--text-main);
-            border: 1px solid var(--border);
+        button.listening:hover {
+            background: #dc2626;
         }
 
-        .btn-copy:hover {
-            background-color: #475569;
+        .clear-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a3a3c2;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .status-bar {
-            margin-top: 24px;
-            padding-top: 18px;
-            border-top: 1px solid var(--border);
-            font-size: 14px;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .visualizer {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            height: 20px;
-        }
-
-        .bar {
-            width: 3px;
-            height: 4px;
-            background-color: var(--text-muted);
-            border-radius: 2px;
-            transition: height 0.1s ease;
-        }
-
-        .recording .bar {
-            background-color: var(--success);
-            animation: bounce 0.6s infinite alternate;
-        }
-
-        .recording .bar:nth-child(2) { animation-delay: 0.15s; }
-        .recording .bar:nth-child(3) { animation-delay: 0.3s; }
-        .recording .bar:nth-child(4) { animation-delay: 0.45s; }
-
-        @keyframes bounce {
-            from { height: 4px; }
-            to { height: 20px; }
+        .clear-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>ଓଡ଼ିଆ Voice to Text</h1>
-    <div class="sub-heading">Intelligent Web-Correction Engine</div>
-
-    <div class="badge">
-        <div class="badge-dot"></div>
-        <span>Live Cloud API Integration Active</span>
-    </div>
-
-    <div class="textarea-wrapper">
-        <textarea id="output-box" placeholder="ଏଠାରେ କ୍ଲିକ୍ କରି କୁହନ୍ତୁ କିମ୍ବା ଟାଇପ୍ କରନ୍ତୁ..."></textarea>
-    </div>
-
-    <div class="control-panel">
-        <div class="btn-group">
-            <button class="btn-start" id="start-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 19v4M8 23h8"/></svg>
-                Start Mic
-            </button>
-            <button class="btn-stop" id="stop-btn" disabled>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="14" height="14" x="5" y="5" rx="2"/></svg>
-                Stop Mic
-            </button>
-        </div>
-        <button class="btn-copy" id="copy-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy Text
-        </button>
-    </div>
-
-    <div class="status-bar">
-        <span id="status-text">System Status: Ready</span>
-        <div class="visualizer" id="visualizer">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
+    <h2>Speech to Text Engine</h2>
+    <div id="output"></div>
+    
+    <div class="controls">
+        <button id="actionBtn">Start Listening</button>
+        <button id="clearBtn" class="clear-btn">Clear Text</button>
     </div>
 </div>
 
 <script>
-    const startBtn = document.getElementById('start-btn');
-    const stopBtn = document.getElementById('stop-btn');
-    const copyBtn = document.getElementById('copy-btn');
-    const outputBox = document.getElementById('output-box');
-    const statusText = document.getElementById('status-text');
-    const visualizer = document.getElementById('visualizer');
-
+    // Verify Web Speech API browser availability
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
-    let finalCommittedText = "";
 
-    // Comprehensive Web-lookup engine function
-    async function cleanAndTransliterate(rawWord) {
-        if (!rawWord) return "";
+    if (!SpeechRecognition) {
+        document.getElementById('output').innerHTML = `<span style="color: #ef4444;">Error: Web Speech API is not supported in this browser. Please use a modern browser like Google Chrome or Microsoft Edge.</span>`;
+        document.getElementById('actionBtn').disabled = true;
+    } else {
+        const recognition = new SpeechRecognition();
         
-        // Isolate punctuation marks to restore them post-lookup
-        const matchPunctuation = rawWord.match(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g);
-        let cleanWord = rawWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
+        // Runtime Settings
+        recognition.continuous = true;         // Prevents automatic cutoff when you pause speaking
+        recognition.interimResults = true;     // Enables processing text while actively speaking
+        recognition.lang = 'en-US';            // Define recognition language profile
+
+        const actionBtn = document.getElementById('actionBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const outputDiv = document.getElementById('output');
         
-        if (!cleanWord) return rawWord;
-        if (!/[a-zA-Z]/.test(cleanWord)) return rawWord;
+        let isListening = false;
+        let finalTranscript = '';
 
-        // Structured live lookup payload string construction
-        const targetEndpoint = `https://inputtools.google.com/request?text=${encodeURIComponent(cleanWord)}&itc=or-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
+        // Dynamic Text Replacement Rules
+        const correctionMap = {
+            "clear cookies": "[Action: Clear Cookies]",
+            "dip shit": "my friend",
+            "bard": "Gemini"
+        };
 
-        try {
-            const fetchPromise = await fetch(targetEndpoint);
-            if (!fetchPromise.ok) throw new Error("Network validation rejected");
-            
-            const payloadStructure = await fetchPromise.json();
-            if (payloadStructure && payloadStructure[0] === "SUCCESS" && payloadStructure[1][0][1][0]) {
-                let resolvedTarget = payloadStructure[1][0][1][0];
-                if (matchPunctuation) resolvedTarget += matchPunctuation.join("");
-                return resolvedTarget;
-            }
-        } catch (exception) {
-            console.warn("Fallback path applied. Context tracing:", exception);
+        // Processes phrase corrections against active transcripts
+        function sanitizeText(text) {
+            let modifiedText = text;
+            Object.keys(correctionMap).forEach(phrase => {
+                const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+                modifiedText = modifiedText.replace(regex, correctionMap[phrase]);
+            });
+            return modifiedText;
         }
-        return rawWord;
-    }
 
-    async function processSentenceBlocks(sentenceString) {
-        if (!sentenceString) return "";
-        const tokenArray = sentenceString.split(/\s+/);
-        const processingQueue = tokenArray.map(token => cleanAndTransliterate(token));
-        const completedTokens = await Promise.all(processingQueue);
-        return completedTokens.join(" ");
-    }
-
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-IN'; // Indian-English context captures phonetics cleanly
-
-        recognition.onstart = () => {
-            statusText.textContent = "System Status: Listening actively...";
-            visualizer.classList.add('recording');
-            startBtn.disabled = true;
-            stopBtn.disabled = false;
-            finalCommittedText = outputBox.value;
-        };
-
-        recognition.onerror = (event) => {
-            console.error("Speech structural interrupt:", event.error);
-            statusText.textContent = "System Status: Input idle.";
-            stopBtn.click();
-        };
-
-        recognition.onend = () => {
-            statusText.textContent = "System Status: Microphone deactivated.";
-            visualizer.classList.remove('recording');
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-        };
-
-        recognition.onresult = async (event) => {
-            let interimBuffer = '';
-            let finalBuffer = '';
+        // Stream and format spoken data
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
 
             for (let i = event.resultIndex; i < event.results.length; ++i) {
-                const transcriptSegment = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                    finalBuffer += transcriptSegment;
+                    finalTranscript += event.results[i][0].transcript + ' ';
                 } else {
-                    interimBuffer += transcriptSegment;
+                    interimTranscript += event.results[i][0].transcript;
                 }
             }
 
-            if (finalBuffer !== '') {
-                const transformedFinal = await processSentenceBlocks(finalBuffer);
-                finalCommittedText += transformedFinal + " ";
-            }
+            // Run transcripts through the cleanup utility mapping
+            const cleanFinal = sanitizeText(finalTranscript);
+            const cleanInterim = sanitizeText(interimTranscript);
 
-            const transformedInterim = await processSentenceBlocks(interimBuffer);
-            outputBox.value = finalCommittedText + transformedInterim;
+            // Output structured layout separating finalized text from real-time dynamic guesses
+            outputDiv.innerHTML = `<span>${cleanFinal}</span><span style="color: #71717a;">${cleanInterim}</span>`;
+            
+            // Auto scroll container downwards as more text populates
+            outputDiv.scrollTop = outputDiv.scrollHeight;
         };
-    } else {
-        statusText.textContent = "System Error: Platform rendering incompatibility.";
-    }
 
-    // Capture Manual Typing Space Intercepts
-    outputBox.addEventListener('keydown', async (event) => {
-        if (event.key === ' ') {
-            const indexMark = outputBox.selectionStart;
-            const absoluteText = outputBox.value;
-
-            const preCursorBlock = absoluteText.substring(0, indexMark);
-            const blockTokens = preCursorBlock.split(/\s+/);
-            const targetedToken = blockTokens[blockTokens.length - 1];
-
-            if (/^[a-zA-Z.,\/#!$%\^&\*;:{}=\-_`~()?]+$/.test(targetedToken)) {
-                event.preventDefault();
-                
-                const verifiedTargetWord = await cleanAndTransliterate(targetedToken);
-                const tokenTargetOffset = preCursorBlock.lastIndexOf(targetedToken);
-                
-                const leadingString = absoluteText.substring(0, tokenTargetOffset) + verifiedTargetWord;
-                const trailingString = absoluteText.substring(indexMark);
-
-                outputBox.value = leadingString + " " + trailingString;
-                const cursorResetOffset = leadingString.length + 1;
-                outputBox.setSelectionRange(cursorResetOffset, cursorResetOffset);
+        // Click Handler for Speech Control Toggle
+        actionBtn.addEventListener('click', () => {
+            if (isListening) {
+                isListening = false; // Set to false first so onend logic knows it was intentional
+                recognition.stop();
+            } else {
+                recognition.start();
             }
-        }
-    });
+        });
 
-    startBtn.addEventListener('click', () => recognition && recognition.start());
-    stopBtn.addEventListener('click', () => recognition && recognition.stop());
+        // Click Handler to Clear Output Canvas
+        clearBtn.addEventListener('click', () => {
+            finalTranscript = '';
+            outputDiv.innerHTML = '';
+        });
 
-    copyBtn.addEventListener('click', () => {
-        outputBox.select();
-        navigator.clipboard.writeText(outputBox.value);
-        const baselineStatus = statusText.textContent;
-        statusText.textContent = "Success: Clipboard updated! 📋";
-        setTimeout(() => statusText.textContent = baselineStatus, 2500);
-    });
+        recognition.onstart = () => {
+            isListening = true;
+            actionBtn.textContent = "Stop Listening";
+            actionBtn.classList.add('listening');
+        };
+
+        recognition.onend = () => {
+            // Restart audio loop if execution ended via an internal timeout drop instead of a stop click
+            if (isListening) {
+                recognition.start();
+            } else {
+                actionBtn.textContent = "Start Listening";
+                actionBtn.classList.remove('listening');
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech Recognition Error Event:", event.error);
+            if (event.error === 'not-allowed') {
+                outputDiv.innerHTML = `<span style="color: #ef4444;">System Warning: Microphone authorization blocked. Please verify browser permissions.</span>`;
+                isListening = false;
+                actionBtn.textContent = "Start Listening";
+                actionBtn.classList.remove('listening');
+            }
+        };
+    }
 </script>
-
 </body>
 </html>
