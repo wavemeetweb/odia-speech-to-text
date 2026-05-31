@@ -43,7 +43,6 @@ export class GroqSpeechEngine {
         const formData = new FormData();
         formData.append('file', audioBlob, 'audio.webm');
         formData.append('model', 'whisper-large-v3');
-        formData.append('language', 'or');
         formData.append('temperature', '0.0');
 
         const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
