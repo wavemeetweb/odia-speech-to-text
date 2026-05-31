@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odia Voice Engine</title>
+    <title>Odia Voice Engine (Groq)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <main class="app-container">
         <header class="app-header">
-            <div class="brand-badge">ODIA VOICE v2.0</div>
+            <div class="brand-badge">GROQ WHISPER v3.0</div>
             <h1 class="app-title">ଓଡ଼ିଆ Speech Engine</h1>
-            <p class="app-subtitle">Real-time modular voice-to-text pipeline</p>
+            <p class="app-subtitle">Powered by Groq LPU Hardware Acceleration</p>
         </header>
+
+        <section class="config-workspace">
+            <input type="password" id="groqApiKey" class="input-field" placeholder="Enter your Groq API Key (gsk_...)">
+        </section>
 
         <section class="display-workspace">
             <div id="outputCanvas" class="output-canvas" tabIndex="0" role="textbox" aria-multiline="true"></div>
-            <div id="statusIndicator" class="status-indicator">SYSTEM IDLE</div>
+            <div id="statusIndicator" class="status-indicator">SYSTEM READY</div>
         </section>
         
         <footer class="controls-workspace">
@@ -25,12 +29,8 @@
                 <div class="pulse-ring"></div>
                 <span class="btn-text">Listen</span>
             </button>
-            <button id="copyTextBtn" class="btn btn-secondary">
-                Copy
-            </button>
-            <button id="clearCanvasBtn" class="btn btn-danger">
-                Clear
-            </button>
+            <button id="copyTextBtn" class="btn btn-secondary">Copy</button>
+            <button id="clearCanvasBtn" class="btn btn-danger">Clear</button>
         </footer>
     </main>
 
